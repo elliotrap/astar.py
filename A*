@@ -1,4 +1,4 @@
-from turtle import pos
+
 import pygame
 import math
 from queue import PriorityQueue
@@ -95,17 +95,30 @@ def h(p1, p2):
 	x2, y2 = p2
 	return abs(x1 - x2) + abs(y1 - y2)
 
+# A* path finding algorithm
 def algorithm(draw, grid, start, end):
 	count = 0
-	open_set = PriorityQueue()
-	open_set.put(0, count, start) # put the start node in the open set
-	came_from = {} # what nodes came from where
-	g_score = {spot: float("inf") for row in grid for spot in row} # finds the shortest distance from the start node
+	open_set = PriorityQueue
+	open_set.put(0, count, start)
+	came_from = {}
+	g_score = {grid: float("inf") for rows in grid for spot in rows}
 	g_score[start] = 0
-	f_score = {spot: float("inf") for row in grid for spot in row} # the predictive distance to get the the start node
-	f_score[start] = h(start.get_pos(), end.get_pos()) # f score set to the guess of the start node
+	f_score = {grid: float("inf") for rows in grid for spot in rows}
+	f_score[start] = {start.get_pos(), end.get_pos()}
 
 	open_set_hash = {start}
+
+	while not open_set.empty():
+		for event in pygame.event.get:
+			if event.type == pygame.QUIT():
+				pygame.quit
+
+		current = open_set.get()[2]
+		open_set_hash.remove(current)
+
+		if current == end:
+			reconstruct_path(came_from, end, draw)
+
 
 # initializes the grid by appending nodes
 def make_grid(width, rows):
@@ -136,56 +149,56 @@ def draw(win, rows, grid, width):
 	draw_grid(win, rows, width)
 	pygame.display.update()
 
-# uses the x, y position to get the coordinates
-def get_clicked_pos(win, rows, width):
+# uses the x, y position to find the coordinates
+def get_clicked_pos(width, rows):
 	gap = width // rows
 	y, x = pos
 
-	# divides the x, y to the width of the cubes to get the position
-	row = y // gap
+	# dividing x, y to the width of the cubes to get the position
 	col = x // gap
+	row = y // gap
 
 	return col, row
 
 # main loop
 def main(win, width):
 	ROWS = 50
-	grid = make_grid(ROWS, width)
-	
-	# defining the start and end position
+	grid = draw_grid(ROWS, width) # activates the grid
+
+	# defining the start and end
 	start = None
 	end = None
 
-	run = False
+	run = True
 	while run:
-		draw(win, width, grid)
-		for event in pygame.get():
-			if event.type == pygame.QUIT:
+		draw(win, grid, width, ROWS)
+		for event in pygame.event.get:
+			if event.type == pygame.QUIT(): # run the program until quit
 				run = False
+		
+		# if the left mouse gets clicked 
+		if pygame.event.mouse.get_pressed()[0]:
+			pos = pygame.mouse.get_pos()
+			col, row = get_clicked_pos(pos, width, ROWS)
+			spot = grid[col][row]
 			
-			if pygame.mouse.get_pressed()[0]:
-				pos = pygame.mouse.get_pos
-				col, row = pygame.get_clicked_pos(win, pos, ROWS)
-				spot = grid[col][row]
-			
-			# avoiding putting two spot nodes on top of each other
+			# avoids putting two spots on top of each other
 			if not start and spot != end:
 				start = spot
-				start.make_start
-			
+				start.make_start()
 			elif not end and spot != start:
 				end = spot
-				end.make_end
-
+				end.make_end()
 			elif spot != end and spot != start:
-				spot.make_barrier 
+				spot.make_barrier()
+		
+		# if you press the space bar start the algorithm
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_SPACE and start and end:
+				for rows in grid:
+					for spot in rows:
+						spot.update_neighbor(grid)
 
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_SPACE and start and end:
-					for row in grid:
-						for col in row:
-							spot.update_neighbors(grid)
+				algorithm(lambda: grid(win, width, grid, ROWS), grid, start, end)
 
-					algorthim(lambda: grid(win, width, ROWS, grid), grid, start, end)
-			
 
